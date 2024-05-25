@@ -1,0 +1,5 @@
+pandas~=1.4.3
+numpy~=1.23.2
+flask~=2.2.2
+tensorflow-cpu==2.9.1
+waitress==2.1.2
