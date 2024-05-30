@@ -1,7 +1,12 @@
+import os
 import numpy as np
 import pandas as pd
-from tensorflow.keras.layers import StringLookup, TextVectorization
+from tensorflow.keras.layers import StringLookup, TextVectorization, Dense, Embedding, Dropout, LSTM, InputLayer, \
+    Normalization
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.optimizers import Adam
 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # read the dataset as csv
 df = pd.read_csv('../assets/train.csv')
 
@@ -47,6 +52,13 @@ not_medical_domains = [
 # do not match the criteria of a medical domain
 df = df.drop(df[df["prediction"].isin(not_medical_domains)].index)
 
+# counts of each unique predictions
+value_counts = df["prediction"].value_counts()
+print(value_counts)
+
+# keep only predictions that the value count is greater than 99
+df = df[df.prediction.isin(value_counts.index[value_counts.gt(99)])]
+
 # shape of the data with only the medical domains considered
 print(df.shape)
 
@@ -65,7 +77,7 @@ string_lookup = StringLookup(vocabulary=unique_y, output_mode="one_hot")
 y = string_lookup(y)
 
 # text vectorization layer to preprocess the texts in 'x'
-text_vectorization = TextVectorization()
+text_vectorization = TextVectorization(split='character')
 # training the text vectorization layer based on the data in 'x'
 text_vectorization.adapt(x)
 
@@ -73,6 +85,20 @@ text_vectorization.adapt(x)
 # to convert from string to numerical values
 x = np.array(text_vectorization(x))
 
-# lstm requires a 3D data but the text is in 2D
-# this helps to add an extra layer within the data
-x = x.reshape(x.shape[0], x.shape[1], 1)
+print(x[0])
+print(x.shape)
+# model = Sequential(
+#     [
+#         text_vectorization,
+#         Normalization(),
+#         Embedding(200, 30, input_length=x.shape[0]),
+#         LSTM(256, activation='relu'),
+#         Dense(256, activation='relu'),
+#         Dense(30, activation='softmax')
+#     ]
+# )
+#
+# model.compile(optimizer=Adam(learning_rate=0.001), metrics=['accuracy'], loss='categorical_crossentropy')
+# model.fit(x, y, validation_split=0.2, batch_size=32, epochs=10)
+#
+# model.summary()
