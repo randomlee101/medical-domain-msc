@@ -1,8 +1,7 @@
 import os
 import numpy as np
 import pandas as pd
-from tensorflow.keras.layers import StringLookup, TextVectorization, Dense, Embedding, Dropout, LSTM, InputLayer, \
-    Normalization
+from tensorflow.keras.layers import StringLookup, TextVectorization, Dense, Embedding, LSTM
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.optimizers import Adam
 
@@ -83,22 +82,19 @@ text_vectorization.adapt(x)
 
 # applying the text vectorization layer to the 'x' data
 # to convert from string to numerical values
-x = np.array(text_vectorization(x))
+x = np.array(x)
 
-print(x[0])
-print(x.shape)
-# model = Sequential(
-#     [
-#         text_vectorization,
-#         Normalization(),
-#         Embedding(200, 30, input_length=x.shape[0]),
-#         LSTM(256, activation='relu'),
-#         Dense(256, activation='relu'),
-#         Dense(30, activation='softmax')
-#     ]
-# )
-#
-# model.compile(optimizer=Adam(learning_rate=0.001), metrics=['accuracy'], loss='categorical_crossentropy')
-# model.fit(x, y, validation_split=0.2, batch_size=32, epochs=10)
-#
-# model.summary()
+model = Sequential(
+    [
+        text_vectorization,
+        Embedding(1000, 30, input_length=x.shape[0]),
+        LSTM(256, activation='relu'),
+        Dense(256, activation='relu'),
+        Dense(10, activation='softmax')
+    ]
+)
+
+model.compile(optimizer=Adam(), metrics=['accuracy'], loss='categorical_crossentropy')
+model.fit(x, y, validation_split=0.2, batch_size=16, epochs=30)
+
+model.summary()
