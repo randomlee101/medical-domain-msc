@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from tensorflow.keras.metrics import Recall, Precision, AUC
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import TextVectorization, Dense, Flatten, LSTM, Embedding, BatchNormalization
 
@@ -44,5 +45,5 @@ model = Sequential(
     ]
 )
 
-model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', Recall(), Precision(), AUC()])
 model.fit(x, y, validation_split=0.2, epochs=100)

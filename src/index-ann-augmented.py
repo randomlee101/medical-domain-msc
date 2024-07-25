@@ -3,6 +3,7 @@ import pandas as pd
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords, words as w
 from fast_aug.text import WordsRandomSubstituteAugmenter
+from tensorflow.keras.metrics import Recall, Precision, AUC
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import TextVectorization, Dense, Flatten, BatchNormalization
 
@@ -94,7 +95,7 @@ model = Sequential(
 )
 
 # binary_crossentropy is used as a loss function to adjust the weights of the layers
-model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', Recall(), Precision(), AUC()])
 # the model is being trained over a cycle of 100 with 20% of the data set aside for
 # evaluation during training
 model.fit(x, y, validation_split=0.2, epochs=100)
