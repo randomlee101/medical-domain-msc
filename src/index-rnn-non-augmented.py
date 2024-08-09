@@ -1,5 +1,8 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import tensorflow as tf
 from tensorflow.keras.metrics import Recall, Precision, AUC
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import TextVectorization, Dense, Flatten, LSTM, Embedding, BatchNormalization
@@ -46,4 +49,31 @@ model = Sequential(
 )
 
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', Recall(), Precision(), AUC()])
-model.fit(x, y, validation_split=0.2, epochs=100)
+history = model.fit(x, y, validation_split=0.2, epochs=100)
+
+
+# summarize history for accuracy
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
+plt.title('Medical Pair RNN Accuracy: Non-Augmented')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['Train', 'Validation'], loc='lower right')
+plt.show()
+
+# extract actual results from the dataset
+cm_labels = np.reshape(np.array(y[-500:]), (1, 500))[0]
+# predict the labels from the corresponding training set and round them to result to 0 or 1
+predictions = np.round(model.predict(x[-500:]))
+# flatten the prediction to match the shape of the labels
+predictions = np.reshape(np.array(predictions), (1, predictions.shape[0]))[0]
+
+# plot confusion matrix with 500 sample data
+cm = tf.math.confusion_matrix(cm_labels, predictions)
+plt.figure(figsize=(8, 6))
+sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", cbar=False)
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.title('Medical Pair RNN Confusion Matrix: Non-Augmented')
+plt.show()
+
