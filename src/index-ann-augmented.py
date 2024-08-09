@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords, words as w
 from fast_aug.text import WordsRandomSubstituteAugmenter
@@ -98,4 +99,13 @@ model = Sequential(
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', Recall(), Precision(), AUC()])
 # the model is being trained over a cycle of 100 with 20% of the data set aside for
 # evaluation during training
-model.fit(x, y, validation_split=0.2, epochs=100)
+history = model.fit(x, y, validation_split=0.2, epochs=100)
+
+# summarize history for accuracy
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['Train', 'Validation'], loc='upper left')
+plt.show()

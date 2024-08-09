@@ -1,5 +1,8 @@
 import numpy as np
 import pandas as pd
+import tensorflow as tf
+import matplotlib.pyplot as plt
+import seaborn as sns
 from tensorflow.keras.metrics import Recall, Precision, AUC
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import TextVectorization, Dense, Flatten, BatchNormalization
@@ -48,3 +51,16 @@ model = Sequential(
 
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', Recall(), Precision(), AUC()])
 model.fit(x, y, validation_split=0.2, epochs=100)
+
+cm_labels = np.reshape(np.array(y), (1, y.shape[0]))[0]
+predictions = np.round(model.predict(x))
+predictions = np.reshape(np.array(predictions), (1, predictions.shape[0]))[0]
+
+print(np.unique(predictions, return_counts=True))
+cm = tf.math.confusion_matrix(cm_labels, predictions)
+plt.figure(figsize=(8, 6))
+sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", cbar=False)
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.title('Confusion Matrix')
+plt.show()

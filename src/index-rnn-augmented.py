@@ -1,5 +1,8 @@
 import numpy as np
 import pandas as pd
+import tensorflow as tf
+import seaborn as sns
+import matplotlib.pyplot as plt
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords, words as w
 from fast_aug.text import WordsRandomSubstituteAugmenter
@@ -97,4 +100,26 @@ model = Sequential(
 )
 
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', Recall(), Precision(), AUC()])
-model.fit(x, y, validation_split=0.2, epochs=100)
+history = model.fit(x, y, validation_split=0.2, epochs=100)
+
+cm_labels = np.reshape(np.array(y[-500:]), (1, 500))[0]
+predictions = np.round(model.predict(x[-500:]))
+predictions = np.reshape(np.array(predictions), (1, predictions.shape[0]))[0]
+
+print(np.unique(predictions, return_counts=True))
+cm = tf.math.confusion_matrix(cm_labels, predictions)
+plt.figure(figsize=(8, 6))
+sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", cbar=False)
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.title('Confusion Matrix')
+plt.show()
+
+# summarize history for accuracy
+# plt.plot(history.history['accuracy'])
+# plt.plot(history.history['val_accuracy'])
+# plt.title('model accuracy')
+# plt.ylabel('accuracy')
+# plt.xlabel('epoch')
+# plt.legend(['Train', 'Validation'], loc='upper left')
+# plt.show()

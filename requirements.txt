@@ -6,3 +6,5 @@ waitress==2.1.2
 fast-aug==0.1.0
 nltk~=3.8.1
 tensorflow~=2.10.1
+matplotlib~=3.8.2
+seaborn~=0.13.2
